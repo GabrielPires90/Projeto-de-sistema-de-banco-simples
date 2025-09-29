@@ -1,0 +1,59 @@
+from datetime import datetime as date
+
+
+class Cliente :
+    def __init__(self, nome, idade, cpf, cheque_especial ):
+        self.nome = nome 
+        self.idade = idade 
+        self.cpf = cpf
+        self.cheque_especial = cheque_especial
+        self.movimentacoes = []
+        self.taxa_juros = 0.02
+        self.taxa_contrato = 500
+        self.taxa_seguro = 20
+ 
+
+    def depositar(self, valor, data):#Adiciona um dicionario com tipo depósito a lista movimentacoes
+            self.movimentacoes.append ({"Tipo":"Deposito" , "Valor":valor ,"Data":data.date()})
+      
+
+    def sacar(self, valor, data):#Adiciona um dicionario com tipo saque a lista movimentacoes
+            self.movimentacoes.append ({"Tipo":"Saque" , "Valor":valor ,"Data":data.date()})
+
+
+    def calculo_saldo(self):#Calcula o saldo atual do cliente
+        saldo = 0
+        for mov in self.movimentacoes:
+             if mov['Tipo'] == 'Deposito':
+                  saldo += mov['Valor']
+             elif mov ['Tipo'] == 'Saque':
+                  saldo -= mov['Valor']
+        return saldo
+         
+
+    def extrato(self,data_inicial,data_final):#Gera o extrato do cliente entre duas datas e o saldo parcial até a data final
+      extrato = []
+      saldo_parcial = 0
+      for mov in self.movimentacoes:
+           if data_inicial <= mov['Data'] <= data_final:
+                extrato.append(mov)
+      for mov in self.movimentacoes:
+           if mov['Data'] <= data_final:
+                if mov['Tipo'] == 'Deposito':
+                     saldo_parcial += mov['Valor']
+                elif mov['Tipo'] == 'Saque':
+                     saldo_parcial -= mov['Valor']
+
+      return extrato, saldo_parcial
+           
+
+    def simularfinanciamento(self, valor, n_parcelas ):#Calcula o valor da parcela, o total pago e o custo total efetivo de um financiamento
+        if valor <= 0 or n_parcelas <= 0:
+                raise ValueError("Valor ou numero de parcelas incorretos.")
+        n = n_parcelas
+        i = self.taxa_juros
+        parcela = valor * (i *(1 + i) ** n ) / ((1 + i) ** n - 1)
+        total_pago = (parcela + self.taxa_seguro) * n + self.taxa_contrato
+        custo_total_efetivo = (total_pago - valor) / valor
+
+        return parcela , total_pago, custo_total_efetivo,self.taxa_juros           
