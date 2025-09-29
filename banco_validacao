@@ -1,0 +1,39 @@
+from datetime import datetime 
+
+def validar_valor_positivo(valor):#Valida se o valor é positivo
+    if valor <= 0:
+        raise ValueError("O valor deve ser positivo.")
+def validar_nome(nome):
+    nome_limpo = nome.replace(" ", "")
+    if not nome_limpo.isalpha() or len(nome_limpo) < 2:
+        raise ValueError("Nome inválido. Deve conter apenas letras e ter pelo menos 2 letras.")
+
+def validar_idade(idade):#Faz a validação da idade e verifica se é um numero inteiro e dentro dos padores aceitaveis
+    if not isinstance(idade, int) or idade <= 0 or idade > 120:
+        raise ValueError("Idade inválida.")
+
+def validar_data(data_str):
+    if not data_str.strip():  # Se o usuário só apertar Enter
+        return datetime.now().date()
+    try:
+        return datetime.strptime(data_str.strip(), "%d-%m-%Y").date()
+    except ValueError:
+        raise ValueError("Data inválida. Use o formato DD-MM-AAAA.")
+
+def validar_cpf(cpf):#Valida se o CPF tem 11 dígitos numéricos
+    if not (cpf.isdigit() and len(cpf) == 11):
+        raise ValueError("CPF inválido. Deve conter 11 dígitos numéricos.")
+
+def validar_opcao_menu(opcao, opcoes_validas):#Valida se a opção do menu é válida
+    if opcao not in opcoes_validas:
+        raise ValueError("Opção inválida.")
+
+def validar_limite_saque(valor, saldo, cheque_especial):#Valida se o saque é possível considerando o saldo e o cheque especial
+    if valor > saldo + cheque_especial:
+        raise ValueError("Saldo insuficiente e limite do cheque especial excedido.")
+
+def validar_conta(conta):#Valida se a conta é numérica e tem entre 4 e 6 dígitos
+    if not (conta.isdigit() and 4 <= len(conta) <= 6):
+        raise ValueError("Número de conta inválido. Deve conter entre 4 e 6 dígitos numéricos.")
+
+
