@@ -1,0 +1,129 @@
+from bancoModel import Cliente
+from datetime import datetime 
+from bancovalidacao import (
+    validar_nome,
+    validar_valor_positivo,
+    validar_idade,
+    validar_data,
+    validar_cpf,
+    validar_opcao_menu,
+    validar_limite_saque,
+    validar_conta,
+)
+
+class Interface:
+    def __init__(self):
+        self.cadastrar_cliente()
+        self.menu()
+
+    def cadastrar_cliente(self):#Cadastrando o cliente antes de iniciar o menu
+        try:
+                self.nome = input("Digite seu nome:").upper()
+                validar_nome(self.nome)
+                self.conta = input("Digite o número da sua conta:")
+                validar_conta(self.conta)
+                self.cpf = input("Digite seu CPF:")
+                validar_cpf(self.cpf)
+                self.idade = int(input("Digite sua idade:"))
+                validar_idade(self.idade)
+                self.cheque_especial = float(input("Digite o seu limite do cheque especial:"))
+                validar_valor_positivo(self.cheque_especial)
+                self.int = Cliente(self.nome, self.idade, self.cpf, self.cheque_especial)
+        except ValueError as e:
+                print(f"Erro no cadastro: {e}")
+                self.cadastrar_cliente()
+
+    def menu(self):#Menu de opçoes
+        while True:
+            try: 
+            
+                print(f"{'=' * 20} MENU {'=' * 20}")
+                print(f"{'1-Depositar': <30} | {'2-Sacar' : <30}")
+                print(f"{'3-Mostrar Saldo' : <30} | {'4-Extrato' : <30}")
+                print(f"{'5- Simular Financimento' : <30} | {'6-Ver dados pessoais' : <30}")
+                print(f"{'7-Sair' : <30} |")
+                print(f"{'=' * 60}")
+                resposta = int(input("Digite uma opção:"))
+                validar_opcao_menu(resposta, range(1, 8))
+
+                if resposta == 1:#Depositar
+                    valor = float(input("Digite o valor que deseja depositar:"))
+                    validar_valor_positivo(valor)
+                    entrada = input("Digite a data do deposito no formato DD-MM-AAAA (ou Enter para hoje): ")
+                    data = validar_data(entrada)
+                    self.int.depositar(valor,data)
+                    print("Depósito realizado com sucesso!")
+
+                elif resposta == 2:#Sacar
+                    valor = float(input("Digite o valor que deseja sacar:"))
+                    validar_limite_saque(valor,self.int.calculo_saldo(),self.int.cheque_especial)
+                    entrada = input("Digite a data do saque no formato DD-MM-AAAA (ou Enter para hoje): ")
+                    data = validar_data(entrada)
+                    self.int.sacar(valor,data)
+                    print("Saque realizado com sucesso!")
+
+                elif resposta == 3:#Mostrar saldo
+                    print(f"Seu saldo é de R${self.int.calculo_saldo()}")
+
+                elif resposta == 4:#Extrato
+                    data_inicial = validar_data(input("Digite a data inicial do seu extrato no formato DD-MM-AAAA:")).date()
+                    data_final = validar_data(input("Digite a data final do seu extrato no formato DD-MM-AAAA:")).date()
+                    extrato, saldo_parcial = self.int.extrato(data_inicial,data_final)
+                    print(f"{'=' * 15}  EXTRATO DE {self.nome} {'=' * 15}")
+                    print("Data       | Tipo     | Valor")
+                    print("-" * 60)
+                    for mov in extrato:
+                        print(f"{mov['Data'].strftime('%d/%m/%Y')} | {mov['Tipo']} | R$ {mov['Valor']:.2f}")
+        
+                    print(f"Seu saldo parcial é de :{saldo_parcial}")
+
+                elif resposta == 5:#Simular financiamento
+                    valor = float(input("Digite o valor do financiamento:"))
+                    validar_valor_positivo(valor)
+                    n_parcelas = int(input("\nDigite o numero de parcelas:"))
+                    validar_valor_positivo(n_parcelas)
+
+                    parcela, total_pago, custo_total_efetivo, taxa_juros = self.int.simularfinanciamento(valor,n_parcelas)
+                    print(f"{'=' * 10} SIMULAÇÃO DE FINANCIAMENTO {'=' * 10}")  
+
+                    print(f"O valor da parcela é de :R${parcela:.2f}")
+                    print(f"O total pago será de :R${total_pago:.2f}")
+                    print(f"O custo total efetivo é de :{custo_total_efetivo:.2%}")
+                    print(f"A taxa de juros é de :{taxa_juros:.2%}")
+
+                    print("-" * 60)
+
+                    saldo_devedor = valor
+                    
+                    pergunta = int(input("Deseja ver a simulação detalhada das parcelas? \n 1-Sim \n 2-Não \n Digite aqui:")) #Simulaçao de financiamento detalhada
+
+                    if pergunta == 1:
+                        print(f"{'=' * 10} DETALHAMENTO DAS PARCELAS {'=' * 10}")
+                        for parcela_num in range(1, n_parcelas + 1):
+                         juros = saldo_devedor * taxa_juros
+                         amortizacao = parcela - juros
+                         saldo_devedor -= amortizacao
+                         print(f"Parcela {parcela_num}: R$ {parcela:.2f} | Juros: R$ {juros:.2f} | Amortização: R$ {amortizacao:.2f} | Saldo devedor: R$ {saldo_devedor:.2f}")
+                         print("-" * 100)
+                    else:
+                        print("Simulação detalhada não exibida.")
+
+                elif resposta == 6:#Ver dados pessoais
+                    print(f"Seu nome é :{self.int.nome}")
+                    print(f"Sua idade é :{self.int.idade}")
+                    print(f"Seu CPF é :{self.int.cpf}")
+                    print(f"Seu cheque especial é de :{self.int.cheque_especial}")
+
+                else:#Sair
+                    print("Obrigado por usar nosso sistema!")
+                    break
+
+            except ValueError as e:
+                  print(f"Erro: {e}.Digite valores corretos e tente novamente.")
+
+
+
+
+b = Interface()
+            
+
