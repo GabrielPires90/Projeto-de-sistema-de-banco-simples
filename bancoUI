@@ -95,7 +95,7 @@ class Interface:
 
                     saldo_devedor = valor
                     
-                    pergunta = int(input("Deseja ver a simulação detalhada das parcelas? \n 1-Sim \n 2-Não \n Digite aqui:")) #Simulaçao de financiamento detalhada
+                    pergunta = int(input("Deseja ver a simulação detalhada das parcelas? \n Digite 1 para sim \n Digite 2 para não \n Digite aqui:")) #Simulaçao de financiamento detalhada
 
                     if pergunta == 1:
                         print(f"{'=' * 10} DETALHAMENTO DAS PARCELAS {'=' * 10}")
